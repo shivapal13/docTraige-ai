@@ -1,0 +1,129 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum DocumentStatus {
+  QUEUED
+  PROCESSING
+  PROCESSED
+  FAILED
+}
+
+enum UrgencyTier {
+  STAT
+  URGENT
+  ROUTINE
+}
+
+enum UserRole {
+  DOCTOR
+  NURSE
+  ADMIN
+}
+
+model Hospital {
+  id        String     @id @default(uuid())
+  name      String
+  slug      String     @unique
+  joinCode  String?    @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  users     User[]
+  documents Document[]
+
+  @@map("hospitals")
+}
+
+model User {
+  id               String         @id @default(uuid())
+  email            String         @unique
+  passwordHash     String
+  name             String
+  role             UserRole       @default(DOCTOR)
+  isActive         Boolean        @default(true)
+  lastLoginAt      DateTime?
+  hospitalId       String?
+  hospital         Hospital?      @relation(fields: [hospitalId], references: [id], onDelete: SetNull)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  refreshTokens    RefreshToken[]
+
+  @@index([hospitalId])
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  jti       String   @unique
+  device    String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model Document {
+  id               String            @id @default(uuid())
+  filename         String
+  filePath         String
+  fileSize         Int
+  mimeType         String            @default("application/pdf")
+  status           DocumentStatus    @default(QUEUED)
+  urgency          UrgencyTier       @default(ROUTINE)
+  hospitalId       String?
+  hospital         Hospital?         @relation(fields: [hospitalId], references: [id], onDelete: SetNull)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  extractionResult ExtractionResult?
+  ruleMatches      RuleMatch[]
+
+  @@index([hospitalId])
+  @@index([hospitalId, urgency, createdAt(sort: Desc)])
+  @@map("documents")
+}
+
+model ExtractionResult {
+  id                 String   @id @default(uuid())
+  documentId         String   @unique
+  patientName        String?
+  mrn                String?  // Medical Record Number
+  dob                String?  // Date of Birth
+  documentType       String?  // Lab Report, Radiology, Specialist Consult
+  rawText            String   @db.Text
+  extractedLabValues Json?    // Array of [{ test: "Glucose", value: 35, unit: "mg/dL" }]
+  flaggedPhrases     Json?    // Array of [{ phrase: "pneumothorax", confidence: 0.95 }]
+  createdAt          DateTime @default(now())
+
+  document           Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@map("extraction_results")
+}
+
+model RuleMatch {
+  id          String      @id @default(uuid())
+  documentId  String
+  ruleName    String
+  testName    String
+  foundValue  String
+  threshold   String
+  severity    UrgencyTier
+  description String
+  createdAt   DateTime    @default(now())
+
+  document    Document    @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+  @@map("rule_matches")
+}

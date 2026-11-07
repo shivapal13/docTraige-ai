@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+services/ai_service/venv/
+services/ai_service/.venv/
+
+# Environment Variables & Secrets (PHI / Security - Never commit to Git)
+.env
+.env.*
+*.env
+*.env.*
+services/web-gateway/.env
+services/ai_service/.env
+frontend/.env
+
+# Shared Patient Uploads (PHI - Never commit to Git)
+shared_uploads/*
+services/shared_uploads/*
+!shared_uploads/.gitkeep
+!services/shared_uploads/.gitkeep
+
+# Build Outputs & Dist
+dist/
+build/
+.next/
+*.log
+
+# IDE & OS Files
+.DS_Store
+.vscode/
+.idea/
