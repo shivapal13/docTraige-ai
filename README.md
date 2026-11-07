@@ -4,10 +4,7 @@
 
 [![React](https://img.shields.io/badge/React_18-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript_5-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite_6-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![NestJS](https://img.shields.io/badge/NestJS_10-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)](https://nestjs.com/)
-[![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Python](https://img.shields.io/badge/Python_3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
@@ -39,7 +36,7 @@ In busy emergency departments, hundreds of patient documents arrive daily — la
                         ┌───────────────────────────┐
                         │    NestJS Web Gateway     │ :3000
                         │  - JWT + httpOnly Cookies │
-                        │  - Rate Limiter (Throttler│
+                        │  - Rate Limiter Throttler│
                         │  - Multi-Tenant Isolation │
                         └─────────────┬─────────────┘
                                       │
@@ -234,7 +231,3 @@ VITE_WS_URL=http://localhost:3000/triage-ws
 ```
 
 ---
-
-## License
-
-This project is open-source under the [MIT License](LICENSE).
