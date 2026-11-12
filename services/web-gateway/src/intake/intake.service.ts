@@ -224,6 +224,9 @@ export class IntakeService {
             extractionResult: true,
           },
         });
+      }, {
+        maxWait: 15000,
+        timeout: 30000,
       });
 
       this.logger.log(
