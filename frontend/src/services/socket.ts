@@ -45,6 +45,12 @@ export const initWebSocket = (
   return socket;
 };
 
+export const updateWebSocketToken = (newToken: string) => {
+  if (socket) {
+    socket.auth = { token: newToken };
+  }
+};
+
 export const disconnectWebSocket = () => {
   if (socket) {
     socket.disconnect();

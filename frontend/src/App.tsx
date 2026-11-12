@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { AuthView } from './components/AuthView';
 import { TriageDashboard } from './components/TriageDashboard';
 import { UploadModal } from './components/UploadModal';
 import { StatAlertBanner } from './components/StatAlertBanner';
 import { authApi, documentsApi } from './services/api';
-import { initWebSocket, disconnectWebSocket } from './services/socket';
+import { initWebSocket, disconnectWebSocket, updateWebSocketToken } from './services/socket';
 import { playEmergencyTone } from './utils/audio';
 import { DocumentItem, User, StatAlertPayload } from './types';
 
@@ -19,6 +19,11 @@ export const App: React.FC = () => {
   const [audioMuted, setAudioMuted] = useState<boolean>(() => {
     return localStorage.getItem('doctriage_audio_muted') === 'true';
   });
+  const audioMutedRef = useRef(audioMuted);
+  useEffect(() => {
+    audioMutedRef.current = audioMuted;
+  }, [audioMuted]);
+
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [wsConnected, setWsConnected] = useState(false);
@@ -95,7 +100,7 @@ export const App: React.FC = () => {
       (alertData: StatAlertPayload) => {
         // stat_alert_received broadcast
         setStatAlert(alertData);
-        if (!audioMuted) {
+        if (!audioMutedRef.current) {
           playEmergencyTone();
         }
         if (alertData.document?.id) {
@@ -114,15 +119,25 @@ export const App: React.FC = () => {
       handleLogout();
     };
 
+    const onTokenRefreshed = (e: Event) => {
+      const customEvent = e as CustomEvent<{ token: string }>;
+      if (customEvent.detail?.token) {
+        setToken(customEvent.detail.token);
+        updateWebSocketToken(customEvent.detail.token);
+      }
+    };
+
     window.addEventListener('auth:session_expired', onSessionExpired);
     window.addEventListener('auth:logout', onSessionExpired);
+    window.addEventListener('auth:token_refreshed', onTokenRefreshed);
 
     return () => {
       window.removeEventListener('auth:session_expired', onSessionExpired);
       window.removeEventListener('auth:logout', onSessionExpired);
+      window.removeEventListener('auth:token_refreshed', onTokenRefreshed);
       disconnectWebSocket();
     };
-  }, [token, audioMuted, fetchDocuments]);
+  }, [token, fetchDocuments]);
 
   // If unauthenticated, show Auth workstation
   if (!token) {

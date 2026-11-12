@@ -205,29 +205,3 @@ npm run dev
 Open **`http://localhost:5173`** in your browser.
 
 ---
-
-## Environment Variables
-
-### `services/web-gateway/.env`
-```env
-PORT=3000
-DATABASE_URL=postgresql://user:password@host:5432/dbname?sslmode=require
-REDIS_HOST=localhost
-REDIS_PORT=6379
-AI_ENGINE_URL=http://localhost:8000
-JWT_SECRET=your_jwt_secret_key
-JWT_EXPIRES_IN=15m
-JWT_ACCESS_SECRET=your_jwt_access_secret
-JWT_ACCESS_EXPIRES_IN=15m
-JWT_REFRESH_SECRET=your_jwt_refresh_secret
-JWT_REFRESH_EXPIRES_IN=7d
-ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
-```
-
-### `frontend/.env`
-```env
-VITE_API_URL=http://localhost:3000/api/v1
-VITE_WS_URL=http://localhost:3000/triage-ws
-```
-
----

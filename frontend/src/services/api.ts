@@ -76,6 +76,7 @@ apiClient.interceptors.response.use(
         localStorage.setItem('token', accessToken);
         // Clean out plaintext refreshToken from localStorage (managed securely via httpOnly cookie)
         localStorage.removeItem('refreshToken');
+        window.dispatchEvent(new CustomEvent('auth:token_refreshed', { detail: { token: accessToken } }));
 
         apiClient.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
